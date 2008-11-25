@@ -48,18 +48,29 @@
 " current buffer has unsaved modifications, then the scratch buffer will be
 " opened in a new window
 "
+" Settings
+" --------
+"
+" Change the height of the scratch window in lines (default is 20).
+"
+" 	let g:scratch_height = 123
+"
 " ****************** Do not modify after this line ************************
 
 if exists('loaded_scratch') || &cp
     finish
 endif
 
-let loaded_scratch=1
+let loaded_scratch = 1
+
+" Default height of scratch window.
+if !exists('g:scratch_height')
+	let g:scratch_height = 20
+endif
 
 " Scratch buffer name
 let ScratchBufferName = "__Scratch__"
 
-" ScratchBufferOpen
 " Open the scratch buffer
 function! s:ScratchBufferOpen(new_win)
     let split_win = a:new_win
@@ -75,7 +86,7 @@ function! s:ScratchBufferOpen(new_win)
     if scr_bufnum == -1
         " open a new scratch buffer
         if split_win
-            exe "new " . g:ScratchBufferName
+            exe g:scratch_height . "new " . g:ScratchBufferName
         else
             exe "edit " . g:ScratchBufferName
         endif
@@ -92,7 +103,7 @@ function! s:ScratchBufferOpen(new_win)
         else
             " Create a new scratch buffer
             if split_win
-                exe "split +buffer" . scr_bufnum
+                exe g:scratch_height . "split +buffer" . scr_bufnum
             else
                 exe "buffer " . scr_bufnum
             endif
