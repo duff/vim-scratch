@@ -16,6 +16,7 @@
 " Changes/additions by Jonas Kramer:
 " 	* Added toggle function and command.
 " 	* Introduced option that lets you define the height of a scratch window.
+" 	* Optionally saving buffer between sessions.
 " 
 "
 " Overview
@@ -68,6 +69,10 @@
 "
 " 	let g:scratch_height = 123
 "
+" Save the scratch buffers content between Vim sessions in some file.
+"
+" 	let g:scratch_file = ~/.vim/scratch
+"
 " ****************** Do not modify after this line ************************
 
 if exists('loaded_scratch') || &cp
@@ -103,6 +108,17 @@ function! s:ScratchBufferOpen(new_win)
         else
             exe "edit " . g:ScratchBufferName
         endif
+
+		" If a scratch file is configured, load its content into the scratch
+		" buffer.
+		if exists("g:scratch_file")
+			let s:globbed = glob(g:scratch_file)
+
+			if filereadable(s:globbed)
+				let content = readfile(s:globbed)
+				call setline(1, content)
+			endif
+		endif
     else
         " Scratch buffer is already created. Check whether it is open
         " in one of the windows
@@ -143,7 +159,19 @@ function! s:ToggleScratch()
 endfunction
 
 
+" Save the scratch buffer to a file.
+function! s:ScratchSave()
+	let scr_bufnum = bufnr(g:ScratchBufferName)
+
+	if scr_bufnum != -1
+		let s:globbed = glob(g:scratch_file)
+		let content = getbufline(g:ScratchBufferName, 1, '$')
+		call writefile(content, s:globbed)
+	endif
+endf
+
 autocmd BufNewFile __Scratch__ call s:ScratchMarkBuffer()
+autocmd BufUnload __Scratch__ call s:ScratchSave()
 
 " Command to edit the scratch buffer in the current window.
 command! -nargs=0 Scratch call s:ScratchBufferOpen(0)
