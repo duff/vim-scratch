@@ -4,6 +4,19 @@
 " 	* Jonas Kramer (jkramer AT nex DOT scrapping DOT cc)
 " Version: 1.1
 " Last Modified: 2008-11-25
+" Copyright: Copyright (C) 2003-2008 Yegappan Lakshmanan
+"            Permission is hereby granted to use and distribute this code,
+"            with or without modifications, provided that this copyright
+"            notice is copied with it. Like anything else that's free,
+"            scratch.vim is provided *as is* and comes with no warranty of any
+"            kind, either expressed or implied. In no event will the copyright
+"            holder be liable for any damages resulting from the use of this
+"            software.
+" 
+" Changes/additions by Jonas Kramer:
+" 	* Added toggle function and command.
+" 	* Introduced option that lets you define the height of a scratch window.
+" 
 "
 " Overview
 " --------
