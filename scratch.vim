@@ -1,7 +1,9 @@
 " File: scratch.vim
-" Author: Yegappan Lakshmanan (yegappan AT yahoo DOT com)
-" Version: 1.0
-" Last Modified: June 3, 2003
+" Author:
+" 	* Yegappan Lakshmanan (yegappan AT yahoo DOT com)
+" 	* Jonas Kramer (jkramer AT nex DOT scrapping DOT cc)
+" Version: 1.1
+" Last Modified: 2008-11-25
 "
 " Overview
 " --------
@@ -28,7 +30,7 @@
 "
 " To open the scratch buffer in a new split window, use the following command:
 "
-"       :Sscratch
+"       :SplitScratch
 "
 " When you close the scratch buffer window, the buffer will retain the
 " contents. You can again edit the scratch buffer by openeing it using one of
@@ -43,9 +45,11 @@
 " opened in a new window
 "
 " ****************** Do not modify after this line ************************
+
 if exists('loaded_scratch') || &cp
     finish
 endif
+
 let loaded_scratch=1
 
 " Scratch buffer name
@@ -92,8 +96,7 @@ function! s:ScratchBufferOpen(new_win)
     endif
 endfunction
 
-" ScratchMarkBuffer
-" Mark a buffer as scratch
+" Mark a buffer as scratch.
 function! s:ScratchMarkBuffer()
     setlocal buftype=nofile
     setlocal bufhidden=hide
@@ -103,8 +106,9 @@ endfunction
 
 autocmd BufNewFile __Scratch__ call s:ScratchMarkBuffer()
 
-" Command to edit the scratch buffer in the current window
+" Command to edit the scratch buffer in the current window.
 command! -nargs=0 Scratch call s:ScratchBufferOpen(0)
-" Command to open the scratch buffer in a new split window
-command! -nargs=0 Sscratch call s:ScratchBufferOpen(1)
+
+" Command to open the scratch buffer in a new split window.
+command! -nargs=0 SplitScratch call s:ScratchBufferOpen(1)
 
