@@ -32,6 +32,10 @@
 "
 "       :SplitScratch
 "
+" To toggle visibility of the scratch windoe, use:
+"
+" 		:ToggleScratch
+"
 " When you close the scratch buffer window, the buffer will retain the
 " contents. You can again edit the scratch buffer by openeing it using one of
 " the above commands. There is no need to save the scatch buffer.
@@ -104,6 +108,17 @@ function! s:ScratchMarkBuffer()
     setlocal buflisted
 endfunction
 
+
+" Scratch Toggling
+function! s:ToggleScratch()
+	if expand('%') == g:ScratchBufferName
+		quit
+	else
+		SplitScratch
+	endif
+endfunction
+
+
 autocmd BufNewFile __Scratch__ call s:ScratchMarkBuffer()
 
 " Command to edit the scratch buffer in the current window.
@@ -112,3 +127,5 @@ command! -nargs=0 Scratch call s:ScratchBufferOpen(0)
 " Command to open the scratch buffer in a new split window.
 command! -nargs=0 SplitScratch call s:ScratchBufferOpen(1)
 
+" Command to toggle scratch buffer visibility on/off.
+command! -nargs=0 ToggleScratch call s:ToggleScratch()
