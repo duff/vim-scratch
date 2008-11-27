@@ -171,7 +171,7 @@ function! s:ScratchSave()
 endf
 
 autocmd BufNewFile __Scratch__ call s:ScratchMarkBuffer()
-autocmd BufUnload __Scratch__ call s:ScratchSave()
+autocmd BufUnload,BufDelete __Scratch__ call s:ScratchSave()
 
 " Command to edit the scratch buffer in the current window.
 command! -nargs=0 Scratch call s:ScratchBufferOpen(0)
