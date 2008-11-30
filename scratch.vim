@@ -75,19 +75,23 @@
 "
 " ****************** Do not modify after this line ************************
 
+
 if exists('loaded_scratch') || &cp
     finish
 endif
 
 let loaded_scratch = 1
 
+
 " Default height of scratch window.
 if !exists('g:scratch_height')
 	let g:scratch_height = 20
 endif
 
+
 " Scratch buffer name
 let ScratchBufferName = "__Scratch__"
+
 
 " Open the scratch buffer
 function! s:ScratchBufferOpen(new_win)
@@ -108,17 +112,6 @@ function! s:ScratchBufferOpen(new_win)
         else
             exe "edit " . g:ScratchBufferName
         endif
-
-		" If a scratch file is configured, load its content into the scratch
-		" buffer.
-		if exists("g:scratch_file")
-			let s:globbed = glob(g:scratch_file)
-
-			if filereadable(s:globbed)
-				let content = readfile(s:globbed)
-				call setline(1, content)
-			endif
-		endif
     else
         " Scratch buffer is already created. Check whether it is open
         " in one of the windows
@@ -138,7 +131,20 @@ function! s:ScratchBufferOpen(new_win)
             endif
         endif
     endif
+
+
+	" If a scratch file is configured, load its content into the scratch
+	" buffer.
+	if exists("g:scratch_file")
+		let s:globbed = glob(g:scratch_file)
+
+		if filereadable(s:globbed)
+			let content = readfile(s:globbed)
+			call setline(1, content)
+		endif
+	endif
 endfunction
+
 
 " Mark a buffer as scratch.
 function! s:ScratchMarkBuffer()
@@ -170,8 +176,10 @@ function! s:ScratchSave()
 	endif
 endf
 
+
 autocmd BufNewFile __Scratch__ call s:ScratchMarkBuffer()
-autocmd BufUnload,BufDelete __Scratch__ call s:ScratchSave()
+autocmd BufUnload,BufDelete,BufHidden,BufWinLeave,BufLeave __Scratch__ call s:ScratchSave()
+
 
 " Command to edit the scratch buffer in the current window.
 command! -nargs=0 Scratch call s:ScratchBufferOpen(0)
