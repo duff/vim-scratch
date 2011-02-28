@@ -92,6 +92,44 @@ function! s:ScratchBufferOpen(new_win)
     endif
 endfunction
 
+function! s:ScratchBufferClose()
+  let winnum = bufwinnr(g:ScratchBufferName)
+  if winnum == -1
+      call s:ScratchWarningMsg('Error: Scratch window is not open')
+      return
+  endif
+
+  if winnr() == winnum
+      " Already in the scratch window. Close it and return
+      if winbufnr(2) != -1
+          " If a window other than the scratch window is open,
+          " then only close the taglist window.
+          close
+      endif
+  else
+      " Goto the scratch window, close it and then come back to the
+      " original window
+      let curbufnr = bufnr('%')
+      exe winnum . 'wincmd w'
+      close
+      " Need to jump back to the original window only if we are not
+      " already in that window
+      let winnum = bufwinnr(curbufnr)
+      if winnr() != winnum
+          exe winnum . 'wincmd w'
+      endif
+  endif
+endfunction
+
+function! s:ScratchBufferToggle()
+  let winnum = bufwinnr(g:ScratchBufferName)
+  if winnum == -1
+    call s:ScratchBufferOpen(1)
+  else
+    call s:ScratchBufferClose()
+  endif
+endfunction
+
 " ScratchMarkBuffer
 " Mark a buffer as scratch
 function! s:ScratchMarkBuffer()
@@ -101,10 +139,45 @@ function! s:ScratchMarkBuffer()
     setlocal buflisted
 endfunction
 
+" ScratchLogMsg
+" Log the supplied debug message along with the time
+let s:scratch_msg = ''
+let s:scratch_debug = 1
+let s:scratch_debug_file = ''
+function! s:ScratchLogMsg(msg)
+    if s:scratch_debug
+        if s:scratch_debug_file != ''
+            exe 'redir >> ' . s:scratch_debug_file
+            silent echon strftime('%H:%M:%S') . ': ' . a:msg . "\n"
+            redir END
+        else
+            " Log the message into a variable
+            " Retain only the last 3000 characters
+            let len = strlen(s:scratch_msg)
+            if len > 3000
+                let s:scratch_msg = strpart(s:scratch_msg, len - 3000)
+            endif
+            let s:scratch_msg = s:scratch_msg . strftime('%H:%M:%S') . ': ' .
+                        \ a:msg . "\n"
+        endif
+    endif
+endfunction
+
+" ScratchWarningMsg()
+" Display a message using WarningMsg highlight group
+function! s:ScratchWarningMsg(msg)
+    echohl WarningMsg
+    echomsg a:msg
+    echohl None
+endfunction
+
 autocmd BufNewFile __Scratch__ call s:ScratchMarkBuffer()
 
 " Command to edit the scratch buffer in the current window
 command! -nargs=0 Scratch call s:ScratchBufferOpen(0)
 " Command to open the scratch buffer in a new split window
 command! -nargs=0 Sscratch call s:ScratchBufferOpen(1)
-
+" Command to close the scratch buffer
+command! -nargs=0 -bar ScratchClose call s:ScratchBufferClose()
+" Command to toggle the scratch buffer in a new split window
+command! -nargs=0 -bar ScratchToggle call s:ScratchBufferToggle()
