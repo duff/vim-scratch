@@ -49,7 +49,11 @@ endif
 let loaded_scratch=1
 
 " Scratch buffer name
-let ScratchBufferName = "__Scratch__"
+if !exists('g:scratch_filename')
+	let ScratchBufferName = "__Scratch__"
+else
+	let ScratchBufferName = g:scratch_filename
+endif
 
 " ScratchBufferOpen
 " Open the scratch buffer
