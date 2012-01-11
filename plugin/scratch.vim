@@ -1,48 +1,25 @@
 " File: scratch.vim
 " Author: Yegappan Lakshmanan (yegappan AT yahoo DOT com)
-" Version: 1.0
-" Last Modified: June 3, 2003
+" Modified By: Dennis Burke (dennisburke AT prodigy DOT net)
+" Version: 1.1
+" Last Modified: January 11, 2012
 "
-" Overview
-" --------
-" You can use the scratch plugin to create a temporary scratch buffer to store
-" and edit text that will be discarded when you quit/exit vim. The contents
-" of the scratch buffer are not saved/stored in a file.
+" User Options:
+" =============
 "
-" Installation
-" ------------
-" 1. Copy the scratch.vim plugin to the $HOME/.vim/plugin directory. Refer to
-"    the following Vim help topics for more information about Vim plugins:
+" By default, the name of the scratch file is "__Scratch__".  You may set your
+" own scratch file name by adding the following to your .vimrc :
+" let g:scratch_filename = "my scratch file name.txt"
 "
-"       :help add-plugin
-"       :help add-global-plugin
-"       :help runtimepath
+" Also, the default is to set the scratch buffer as hidden when closed.  If
+" you open the scratch buffer again before you close vim, the contents of the
+" buffer will still be there.  If you like the buffer to be deleted upon
+" closing it, add the following to your .vimrc :
+" let g:scratch_bufclose = 2
 "
-" 2. Restart Vim.
+" TODO:
+" - Add an option to create another scratch buffer if one is already open.
 "
-" Usage
-" -----
-" You can use the following command to open/edit the scratch buffer:
-"
-"       :Scratch
-"
-" To open the scratch buffer in a new split window, use the following command:
-"
-"       :Sscratch
-"
-" When you close the scratch buffer window, the buffer will retain the
-" contents. You can again edit the scratch buffer by openeing it using one of
-" the above commands. There is no need to save the scatch buffer.
-"
-" When you quit/exit Vim, the contents of the scratch buffer will be lost.
-" You will not be prompted to save the contents of the modified scratch
-" buffer.
-"
-" You can have only one scratch buffer open in a single Vim instance. If the
-" current buffer has unsaved modifications, then the scratch buffer will be
-" opened in a new window
-"
-" ****************** Do not modify after this line ************************
 if exists('loaded_scratch') || &cp
     finish
 endif
@@ -52,7 +29,14 @@ let loaded_scratch=1
 if !exists('g:scratch_filename')
 	let ScratchBufferName = "__Scratch__"
 else
-	let ScratchBufferName = g:scratch_filename
+	let ScratchBufferName = escape(g:scratch_filename, ' ')
+endif
+
+" When the buffer is closed, what should happen to the buffer?
+" 1 - set it to be hidden (default)
+" 2 - delete the buffer
+if !exists('g:scratch_bufclose')
+    let g:scratch_bufclose = 1
 endif
 
 " ScratchBufferOpen
@@ -70,11 +54,14 @@ function! s:ScratchBufferOpen(new_win)
     let scr_bufnum = bufnr(g:ScratchBufferName)
     if scr_bufnum == -1
         " open a new scratch buffer
-        if split_win
+        if split_win == 1
             exe "new " . g:ScratchBufferName
+        elseif split_win == 2
+            exe "tabnew " . g:ScratchBufferName
         else
             exe "edit " . g:ScratchBufferName
         endif
+        let s:scr_fullpath = expand("%:p")
     else
         " Scratch buffer is already created. Check whether it is open
         " in one of the windows
@@ -87,28 +74,36 @@ function! s:ScratchBufferOpen(new_win)
             endif
         else
             " Create a new scratch buffer
-            if split_win
+            if split_win == 1
                 exe "split +buffer" . scr_bufnum
+            elseif split_win == 2
+                exe "tab drop " . escape(s:scr_fullpath, ' ')
             else
                 exe "buffer " . scr_bufnum
             endif
         endif
     endif
+    setfiletype scratch
 endfunction
 
 " ScratchMarkBuffer
 " Mark a buffer as scratch
 function! s:ScratchMarkBuffer()
     setlocal buftype=nofile
-    setlocal bufhidden=hide
+    if g:scratch_bufclose == 1
+        setlocal bufhidden=hide
+    elseif g:scratch_bufclose == 2
+        setlocal bufhidden=delete
+    endif
     setlocal noswapfile
     setlocal buflisted
 endfunction
 
-autocmd BufNewFile __Scratch__ call s:ScratchMarkBuffer()
+autocmd FileType scratch call s:ScratchMarkBuffer()
 
 " Command to edit the scratch buffer in the current window
 command! -nargs=0 Scratch call s:ScratchBufferOpen(0)
 " Command to open the scratch buffer in a new split window
 command! -nargs=0 Sscratch call s:ScratchBufferOpen(1)
-
+" Command to open the scratch buffer in a new tab
+command! -nargs=0 Tscratch call s:ScratchBufferOpen(2)
