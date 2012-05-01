@@ -84,7 +84,7 @@ function! s:ScratchBufferOpen(new_win)
         else
             " Create a new scratch buffer
             if split_win
-                exe "split +buffer" . scr_bufnum
+                exe "vsplit +buffer" . scr_bufnum
             else
                 exe "buffer " . scr_bufnum
             endif
