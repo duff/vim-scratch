@@ -66,46 +66,46 @@ function! s:ScratchBufferOpen(new_win, vert)
 endfunction
 
 function! s:ScratchBufferClose()
-  let winnum = bufwinnr(g:ScratchBufferName)
-  if winnum == -1
-      call s:ScratchWarningMsg('Error: Scratch window is not open')
-      return
-  endif
+    let winnum = bufwinnr(g:ScratchBufferName)
+    if winnum == -1
+        call s:ScratchWarningMsg('Error: Scratch window is not open')
+        return
+    endif
 
-  if winnr() == winnum
-      " Already in the scratch window. Close it and return
-      if winbufnr(2) != -1
-          " If a window other than the scratch window is open,
-          " then only close the taglist window.
-          close
-      endif
-  else
-      " Goto the scratch window, close it and then come back to the
-      " original window
-      let curbufnr = bufnr('%')
-      exe winnum . 'wincmd w'
-      close
-      " Need to jump back to the original window only if we are not
-      " already in that window
-      let winnum = bufwinnr(curbufnr)
-      if winnr() != winnum
-          exe winnum . 'wincmd w'
-      endif
-  endif
+    if winnr() == winnum
+        " Already in the scratch window. Close it and return
+        if winbufnr(2) != -1
+            " If a window other than the scratch window is open,
+            " then only close the taglist window.
+            close
+        endif
+    else
+        " Goto the scratch window, close it and then come back to the
+        " original window
+        let curbufnr = bufnr('%')
+        exe winnum . 'wincmd w'
+        close
+        " Need to jump back to the original window only if we are not
+        " already in that window
+        let winnum = bufwinnr(curbufnr)
+        if winnr() != winnum
+            exe winnum . 'wincmd w'
+        endif
+    endif
 endfunction
 
 function! s:ScratchBufferToggle(vert)
-  let vert_split = a:vert
-  let winnum = bufwinnr(g:ScratchBufferName)
-  if winnum == -1
-    if vert_split
-        call s:ScratchBufferOpen(1, 1)
+    let vert_split = a:vert
+    let winnum = bufwinnr(g:ScratchBufferName)
+    if winnum == -1
+        if vert_split
+            call s:ScratchBufferOpen(1, 1)
+        else
+            call s:ScratchBufferOpen(1, 0)
+        endif
     else
-        call s:ScratchBufferOpen(1, 0)
+        call s:ScratchBufferClose()
     endif
-  else
-    call s:ScratchBufferClose()
-  endif
 endfunction
 
 " ScratchMarkBuffer
