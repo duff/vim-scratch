@@ -11,23 +11,34 @@
 if exists('loaded_scratch') || &cp
     finish
 endif
-let loaded_scratch=1
+
+let loaded_scratch = 1
+
+
+" Default height of scratch window.
+if !exists('g:scratch_height')
+    let g:scratch_height = 20
+endif
+
+" Default width of scratch window.
+if !exists('g:scratch_width')
+    let g:scratch_width = 100
+endif
+
+if !exists('g:scratch_persistent')
+    " 0 => closing the buffer deletes it
+    " 1 => deleted at the end of the session
+    " 2 => persistent between sessions
+    let g:scratch_persistent = 1
+endif
 
 " Scratch buffer name
 if !exists('g:scratch_filename')
-	let ScratchBufferName = "__Scratch__"
+    let ScratchBufferName = "__Scratch__"
 else
-	let ScratchBufferName = escape(g:scratch_filename, ' ')
+    let ScratchBufferName = escape(g:scratch_filename, ' ')
 endif
 
-" When the buffer is closed, what should happen to the buffer?
-" 1 - set it to be hidden (default)
-" 2 - delete the buffer
-if !exists('g:scratch_bufclose')
-    let g:scratch_bufclose = 1
-endif
-
-" ScratchBufferOpen
 " Open the scratch buffer
 function! s:ScratchBufferOpen(new_win, vert)
     let split_win = a:new_win
@@ -45,9 +56,9 @@ function! s:ScratchBufferOpen(new_win, vert)
         " open a new scratch buffer
         if split_win == 1
             if vert_split
-                exe "vnew " . g:ScratchBufferName
+                exe g:scratch_width . "vnew " . g:ScratchBufferName
             else
-                exe "new " . g:ScratchBufferName
+                exe g:scratch_height . "new " . g:ScratchBufferName
             endif
         elseif split_win == 2
             exe "tabnew " . g:ScratchBufferName
@@ -69,9 +80,9 @@ function! s:ScratchBufferOpen(new_win, vert)
             " Create a new scratch buffer
             if split_win == 1
                 if vert_split
-                    exe "vsplit +buffer" . scr_bufnum
+                    exe g:scratch_width . "vsplit +buffer" . scr_bufnum
                 else
-                    exe "split +buffer" . scr_bufnum
+                    exe g:scratch_height . "split +buffer" . scr_bufnum
                 endif
             elseif split_win == 2
                 exe "tab drop " . escape(s:scr_fullpath, ' ')
@@ -81,6 +92,17 @@ function! s:ScratchBufferOpen(new_win, vert)
         endif
     endif
     setfiletype scratch
+
+    " If a scratch file is configured, load its content into the scratch
+    " buffer.
+    if g:scratch_persistent == 2
+        let s:filename_expanded = expand(g:scratch_filename)
+
+        if filereadable(s:filename_expanded)
+            let content = readfile(s:filename_expanded)
+            call setline(1, content)
+        endif
+    endif
 endfunction
 
 function! s:ScratchBufferClose()
@@ -130,16 +152,28 @@ endfunction
 " Mark a buffer as scratch
 function! s:ScratchMarkBuffer()
     setlocal buftype=nofile
-    if g:scratch_bufclose == 1
+    if g:scratch_persistent == 1
         setlocal bufhidden=hide
-    elseif g:scratch_bufclose == 2
+    elseif g:scratch_persistent == 0
         setlocal bufhidden=delete
     endif
     setlocal noswapfile
     setlocal buflisted
 endfunction
 
-" ScratchLogMsg
+" Save the scratch buffer to a file.
+function! s:ScratchSave()
+    if g:scratch_persistent == 2
+        let scr_bufnum = bufnr(g:ScratchBufferName)
+
+        if scr_bufnum != -1
+            let s:filename_expanded = expand(g:scratch_filename)
+            let content = getbufline(g:ScratchBufferName, 1, '$')
+            call writefile(content, s:filename_expanded)
+        endif
+    endif
+endf
+
 " Log the supplied debug message along with the time
 let s:scratch_msg = ''
 let s:scratch_debug = 1
@@ -163,7 +197,6 @@ function! s:ScratchLogMsg(msg)
     endif
 endfunction
 
-" ScratchWarningMsg()
 " Display a message using WarningMsg highlight group
 function! s:ScratchWarningMsg(msg)
     echohl WarningMsg
@@ -171,20 +204,26 @@ function! s:ScratchWarningMsg(msg)
     echohl None
 endfunction
 
-autocmd BufNewFile __Scratch__ call s:ScratchMarkBuffer()
 autocmd FileType scratch call s:ScratchMarkBuffer()
+autocmd BufUnload,BufDelete,BufHidden,BufWinLeave,BufLeave * if &ft ==# 'scratch' | call s:ScratchSave() | endif
 
 " Command to edit the scratch buffer in the current window
 command! -nargs=0 Scratch call s:ScratchBufferOpen(0, 0)
+
 " Command to open the scratch buffer in a new split window
 command! -nargs=0 Sscratch call s:ScratchBufferOpen(1, 0)
+
 " Command to open the scratch buffer in a new vertical split window
 command! -nargs=0 Vscratch call s:ScratchBufferOpen(1, 1)
+
 " Command to close the scratch buffer
 command! -nargs=0 -bar ScratchClose call s:ScratchBufferClose()
+
 " Command to toggle the scratch buffer in a new split window
 command! -nargs=0 -bar ScratchToggle call s:ScratchBufferToggle(0)
+
 " Command to toggle the scratch buffer in a new vertical split window
 command! -nargs=0 -bar VscratchToggle call s:ScratchBufferToggle(1)
+
 " Command to open the scratch buffer in a new tab
 command! -nargs=0 Tscratch call s:ScratchBufferOpen(2, 0)

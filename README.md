@@ -62,20 +62,29 @@ You can have only one scratch buffer open in a single Vim instance. If the
 current buffer has unsaved modifications, then the scratch buffer will be
 opened in a new window
 
-User options
+User Options
 ------------
+The default is to set the scratch buffer as hidden when closed. If you open
+the scratch buffer again before you close vim, the contents of the buffer will
+still be there. If you like the buffer to be deleted upon closing it, add the
+following to your .vimrc :
 
-By default, when you close the scratch buffer window, the buffer will retain
-the contents. You can again edit the scratch buffer by opening it using one
-of the above commands. There is no need to save the scatch buffer.  This
-plugin also can be configured to delete the scratch buffer when it is closed.
-      let g:scratch_bufclose = 2
+    let g:scratch_persistent = 0
 
-When you quit/exit Vim, the contents of the scratch buffer will be lost.
-You will not be prompted to save the contents of the modified scratch
-buffer.
+If you want the scratch buffer to be preserved between sessions:
 
-You can have only one scratch buffer open in a single Vim instance. When
-this plugin is used in one of the two windowed modes (:Scratch or :Sscratch),
-if the current buffer has unsaved modifications, then the scratch buffer will
-be opened in a new window.
+    let g:scratch_persistent = 2
+
+By default, the name of the scratch file is "__Scratch__".  You may set your
+own scratch file name by adding the following to your .vimrc :
+
+    let g:scratch_filename = "~/.vim/scratch_file"
+
+this filename is also the one used to save information between sessions.
+
+You can set the height and the width for Sscratch/Vscratch with:
+
+    let g:scratch_height = 20
+    let g:scratch_width = 100
+
+

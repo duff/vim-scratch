@@ -75,17 +75,29 @@ opened in a new window
 ==============================================================================
 4. User Options                                               *scratch-options*
 
+The default is to set the scratch buffer as hidden when closed. If you open
+the scratch buffer again before you close vim, the contents of the buffer will
+still be there. If you like the buffer to be deleted upon closing it, add the
+following to your .vimrc :
+>
+    let g:scratch_persistent = 0
+>
+If you want the scratch buffer to be preserved between sessions:
+>
+    let g:scratch_persistent = 2
+>
 By default, the name of the scratch file is "__Scratch__".  You may set your
 own scratch file name by adding the following to your .vimrc :
 >
-    let g:scratch_filename = "my scratch file name.txt"
+    let g:scratch_filename = "~/.vim/scratch_file"
 <
-Also, the default is to set the scratch buffer as hidden when closed.  If
-you open the scratch buffer again before you close vim, the contents of the
-buffer will still be there.  If you like the buffer to be deleted upon
-closing it, add the following to your .vimrc :
+this filename is also the one used to save information between sessions.
+
+You can set the height and the width for Sscratch/Vscratch with:
 >
-    let g:scratch_bufclose = 2
+    let g:scratch_height = 20
+    let g:scratch_width = 100
+<
 
 
 vim: ts=4 ft=help tw=78
