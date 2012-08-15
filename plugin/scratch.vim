@@ -1,11 +1,22 @@
 " File: scratch.vim
-" Version: 1.9.2
+" Version: 1.9.3
 " Author: Yegappan Lakshmanan (yegappan AT yahoo DOT com)
 " Modified By: Duff OMelia
 " Modified By: Mark Bennett
 " Modified By: Doug Avery
 " Modified By: Dennis Burke (dennisburke AT prodigy DOT net)
+" Modified By: Jonas Kramer (jkramer AT nex DOT scrapping DOT cc)
 " Modified By: Alessio Bolognino (alessio.bolognino AT gmail DOT com)
+
+" Copyright: Copyright (C) 2003-2008 Yegappan Lakshmanan
+"            Permission is hereby granted to use and distribute this code,
+"            with or without modifications, provided that this copyright
+"            notice is copied with it. Like anything else that's free,
+"            scratch.vim is provided *as is* and comes with no warranty of any
+"            kind, either expressed or implied. In no event will the copyright
+"            holder be liable for any damages resulting from the use of this
+"            software.
+
 " Last Modified: 15 August 2012
 
 if exists('loaded_scratch') || &cp

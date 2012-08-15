@@ -1,14 +1,16 @@
 *scratch.txt*	   For Vim version 7.0	         Last change: 2012 August 15
 
+Version:        1.9.3
+
 Author:         Yegappan Lakshmanan
 Modified By:    Duff OMelia
 Modified By:    Mark Bennett
 Modified By:    Doug Avery
+Modified By:    Dennis Burke
+Modified By:    Jonas Kramer
 Modified By:    Alessio Bolognino
-Version:        1.9
 
-Homepage: https://github.com/molok/vim-scratch
-
+Homepage:       https://github.com/molok/vim-scratch
 
 ==============================================================================
 0. Contents                                                           *scratch*
