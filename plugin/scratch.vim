@@ -67,7 +67,7 @@ function! s:ScratchBufferOpen(new_win)
     if scr_bufnum == -1
         " open a new scratch buffer
         if split_win
-            exe "new " . g:ScratchBufferName
+            exe "vnew " . g:ScratchBufferName
         else
             exe "edit " . g:ScratchBufferName
         endif
@@ -84,7 +84,7 @@ function! s:ScratchBufferOpen(new_win)
         else
             " Create a new scratch buffer
             if split_win
-                exe "split +buffer" . scr_bufnum
+                exe "vsplit +buffer" . scr_bufnum
             else
                 exe "buffer " . scr_bufnum
             endif
