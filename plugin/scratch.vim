@@ -1,19 +1,31 @@
 " File: scratch.vim
-" Version: 1.9
+" Version: 1.9.1
 " Author: Yegappan Lakshmanan (yegappan AT yahoo DOT com)
 " Modified By: Duff OMelia
 " Modified By: Mark Bennett
 " Modified By: Doug Avery
+" Modified By: Dennis Burke (dennisburke AT prodigy DOT net)
 " Modified By: Alessio Bolognino (alessio.bolognino AT gmail DOT com)
 " Last Modified: 15 August 2012
-"
+
 if exists('loaded_scratch') || &cp
     finish
 endif
 let loaded_scratch=1
 
 " Scratch buffer name
-let ScratchBufferName = "__Scratch__"
+if !exists('g:scratch_filename')
+	let ScratchBufferName = "__Scratch__"
+else
+	let ScratchBufferName = escape(g:scratch_filename, ' ')
+endif
+
+" When the buffer is closed, what should happen to the buffer?
+" 1 - set it to be hidden (default)
+" 2 - delete the buffer
+if !exists('g:scratch_bufclose')
+    let g:scratch_bufclose = 1
+endif
 
 " ScratchBufferOpen
 " Open the scratch buffer
@@ -31,15 +43,18 @@ function! s:ScratchBufferOpen(new_win, vert)
     let scr_bufnum = bufnr(g:ScratchBufferName)
     if scr_bufnum == -1
         " open a new scratch buffer
-        if split_win
+        if split_win == 1
             if vert_split
                 exe "vnew " . g:ScratchBufferName
             else
                 exe "new " . g:ScratchBufferName
             endif
+        elseif split_win == 2
+            exe "tabnew " . g:ScratchBufferName
         else
             exe "edit " . g:ScratchBufferName
         endif
+        let s:scr_fullpath = expand("%:p")
     else
         " Scratch buffer is already created. Check whether it is open
         " in one of the windows
@@ -52,17 +67,20 @@ function! s:ScratchBufferOpen(new_win, vert)
             endif
         else
             " Create a new scratch buffer
-            if split_win
+            if split_win == 1
                 if vert_split
                     exe "vsplit +buffer" . scr_bufnum
                 else
                     exe "split +buffer" . scr_bufnum
                 endif
+            elseif split_win == 2
+                exe "tab drop " . escape(s:scr_fullpath, ' ')
             else
                 exe "buffer " . scr_bufnum
             endif
         endif
     endif
+    setfiletype scratch
 endfunction
 
 function! s:ScratchBufferClose()
@@ -112,7 +130,11 @@ endfunction
 " Mark a buffer as scratch
 function! s:ScratchMarkBuffer()
     setlocal buftype=nofile
-    setlocal bufhidden=hide
+    if g:scratch_bufclose == 1
+        setlocal bufhidden=hide
+    elseif g:scratch_bufclose == 2
+        setlocal bufhidden=delete
+    endif
     setlocal noswapfile
     setlocal buflisted
 endfunction
@@ -150,6 +172,7 @@ function! s:ScratchWarningMsg(msg)
 endfunction
 
 autocmd BufNewFile __Scratch__ call s:ScratchMarkBuffer()
+autocmd FileType scratch call s:ScratchMarkBuffer()
 
 " Command to edit the scratch buffer in the current window
 command! -nargs=0 Scratch call s:ScratchBufferOpen(0, 0)
@@ -163,3 +186,5 @@ command! -nargs=0 -bar ScratchClose call s:ScratchBufferClose()
 command! -nargs=0 -bar ScratchToggle call s:ScratchBufferToggle(0)
 " Command to toggle the scratch buffer in a new vertical split window
 command! -nargs=0 -bar VscratchToggle call s:ScratchBufferToggle(1)
+" Command to open the scratch buffer in a new tab
+command! -nargs=0 Tscratch call s:ScratchBufferOpen(2, 0)

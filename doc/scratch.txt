@@ -16,6 +16,7 @@ Homepage: https://github.com/molok/vim-scratch
     1. Overview...............................: |scratch-overview|
     2. Installation...........................: |scratch-installation|
     3. Usage..................................: |scratch-usage|
+    4. User Options...........................: |scratch-options|
 
 ==============================================================================
 1. Overview                                                  *scratch-overview*
@@ -55,6 +56,10 @@ Similar command using vertical split instead of horizontal are available:
       :Vscratch
       :VscratchToggle
 <
+To open the scratch buffer in a new tab, use the following command:
+>
+      :Tscratch
+<
 When you close the scratch buffer window, the buffer will retain the
 contents. You can again edit the scratch buffer by openeing it using one of
 the above commands. There is no need to save the scatch buffer.
@@ -66,5 +71,21 @@ buffer.
 You can have only one scratch buffer open in a single Vim instance. If the
 current buffer has unsaved modifications, then the scratch buffer will be
 opened in a new window
+
+==============================================================================
+4. User Options                                               *scratch-options*
+
+By default, the name of the scratch file is "__Scratch__".  You may set your
+own scratch file name by adding the following to your .vimrc :
+>
+    let g:scratch_filename = "my scratch file name.txt"
+<
+Also, the default is to set the scratch buffer as hidden when closed.  If
+you open the scratch buffer again before you close vim, the contents of the
+buffer will still be there.  If you like the buffer to be deleted upon
+closing it, add the following to your .vimrc :
+>
+    let g:scratch_bufclose = 2
+
 
 vim: ts=4 ft=help tw=78

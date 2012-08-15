@@ -14,6 +14,17 @@ Installation
       :help add-global-plugin
       :help runtimepath
 
+    If you are using Vundle then
+        BundleInstall 'molok/vim-scratch'
+
+    and place
+
+        Bundle 'molok/vim-scratch'
+
+    in your vimrc
+
+    If you're prefer using pathogen, place this directory inside ~/.vim/bundle/
+
 2. Restart Vim.
 
 Usage
@@ -35,6 +46,10 @@ Similar command using vertical split instead of horizontal are available:
       :Vscratch
       :VscratchToggle
 
+To open the scratch buffer in a new tab, use the following command:
+
+      :Tscratch
+
 When you close the scratch buffer window, the buffer will retain the
 contents. You can again edit the scratch buffer by openeing it using one of
 the above commands. There is no need to save the scatch buffer.
@@ -47,3 +62,20 @@ You can have only one scratch buffer open in a single Vim instance. If the
 current buffer has unsaved modifications, then the scratch buffer will be
 opened in a new window
 
+User options
+------------
+
+By default, when you close the scratch buffer window, the buffer will retain
+the contents. You can again edit the scratch buffer by opening it using one
+of the above commands. There is no need to save the scatch buffer.  This
+plugin also can be configured to delete the scratch buffer when it is closed.
+      let g:scratch_bufclose = 2
+
+When you quit/exit Vim, the contents of the scratch buffer will be lost.
+You will not be prompted to save the contents of the modified scratch
+buffer.
+
+You can have only one scratch buffer open in a single Vim instance. When
+this plugin is used in one of the two windowed modes (:Scratch or :Sscratch),
+if the current buffer has unsaved modifications, then the scratch buffer will
+be opened in a new window.
