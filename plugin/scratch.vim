@@ -1,48 +1,12 @@
 " File: scratch.vim
+" Version: 1.9
 " Author: Yegappan Lakshmanan (yegappan AT yahoo DOT com)
-" Version: 1.0
-" Last Modified: June 3, 2003
+" Modified By: Duff OMelia
+" Modified By: Mark Bennett
+" Modified By: Doug Avery
+" Modified By: Alessio Bolognino (alessio.bolognino AT gmail DOT com)
+" Last Modified: 15 August 2012
 "
-" Overview
-" --------
-" You can use the scratch plugin to create a temporary scratch buffer to store
-" and edit text that will be discarded when you quit/exit vim. The contents
-" of the scratch buffer are not saved/stored in a file.
-"
-" Installation
-" ------------
-" 1. Copy the scratch.vim plugin to the $HOME/.vim/plugin directory. Refer to
-"    the following Vim help topics for more information about Vim plugins:
-"
-"       :help add-plugin
-"       :help add-global-plugin
-"       :help runtimepath
-"
-" 2. Restart Vim.
-"
-" Usage
-" -----
-" You can use the following command to open/edit the scratch buffer:
-"
-"       :Scratch
-"
-" To open the scratch buffer in a new split window, use the following command:
-"
-"       :Sscratch
-"
-" When you close the scratch buffer window, the buffer will retain the
-" contents. You can again edit the scratch buffer by openeing it using one of
-" the above commands. There is no need to save the scatch buffer.
-"
-" When you quit/exit Vim, the contents of the scratch buffer will be lost.
-" You will not be prompted to save the contents of the modified scratch
-" buffer.
-"
-" You can have only one scratch buffer open in a single Vim instance. If the
-" current buffer has unsaved modifications, then the scratch buffer will be
-" opened in a new window
-"
-" ****************** Do not modify after this line ************************
 if exists('loaded_scratch') || &cp
     finish
 endif
@@ -53,8 +17,9 @@ let ScratchBufferName = "__Scratch__"
 
 " ScratchBufferOpen
 " Open the scratch buffer
-function! s:ScratchBufferOpen(new_win)
+function! s:ScratchBufferOpen(new_win, vert)
     let split_win = a:new_win
+    let vert_split = a:vert
 
     " If the current buffer is modified then open the scratch buffer in a new
     " window
@@ -67,7 +32,11 @@ function! s:ScratchBufferOpen(new_win)
     if scr_bufnum == -1
         " open a new scratch buffer
         if split_win
-            exe "vnew " . g:ScratchBufferName
+            if vert_split
+                exe "vnew " . g:ScratchBufferName
+            else
+                exe "new " . g:ScratchBufferName
+            endif
         else
             exe "edit " . g:ScratchBufferName
         endif
@@ -84,7 +53,11 @@ function! s:ScratchBufferOpen(new_win)
         else
             " Create a new scratch buffer
             if split_win
-                exe "vsplit +buffer" . scr_bufnum
+                if vert_split
+                    exe "vsplit +buffer" . scr_bufnum
+                else
+                    exe "split +buffer" . scr_bufnum
+                endif
             else
                 exe "buffer " . scr_bufnum
             endif
@@ -121,10 +94,15 @@ function! s:ScratchBufferClose()
   endif
 endfunction
 
-function! s:ScratchBufferToggle()
+function! s:ScratchBufferToggle(vert)
+  let vert_split = a:vert
   let winnum = bufwinnr(g:ScratchBufferName)
   if winnum == -1
-    call s:ScratchBufferOpen(1)
+    if vert_split
+        call s:ScratchBufferOpen(1, 1)
+    else
+        call s:ScratchBufferOpen(1, 0)
+    endif
   else
     call s:ScratchBufferClose()
   endif
@@ -174,10 +152,14 @@ endfunction
 autocmd BufNewFile __Scratch__ call s:ScratchMarkBuffer()
 
 " Command to edit the scratch buffer in the current window
-command! -nargs=0 Scratch call s:ScratchBufferOpen(0)
+command! -nargs=0 Scratch call s:ScratchBufferOpen(0, 0)
 " Command to open the scratch buffer in a new split window
-command! -nargs=0 Sscratch call s:ScratchBufferOpen(1)
+command! -nargs=0 Sscratch call s:ScratchBufferOpen(1, 0)
+" Command to open the scratch buffer in a new vertical split window
+command! -nargs=0 Vscratch call s:ScratchBufferOpen(1, 1)
 " Command to close the scratch buffer
 command! -nargs=0 -bar ScratchClose call s:ScratchBufferClose()
 " Command to toggle the scratch buffer in a new split window
-command! -nargs=0 -bar ScratchToggle call s:ScratchBufferToggle()
+command! -nargs=0 -bar ScratchToggle call s:ScratchBufferToggle(0)
+" Command to toggle the scratch buffer in a new vertical split window
+command! -nargs=0 -bar VscratchToggle call s:ScratchBufferToggle(1)
