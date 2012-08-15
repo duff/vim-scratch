@@ -15,6 +15,7 @@ Installation
       :help runtimepath
 
     If you are using Vundle then
+
         BundleInstall 'molok/vim-scratch'
 
     and place

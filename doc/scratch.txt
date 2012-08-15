@@ -32,10 +32,22 @@ the scratch buffer are not saved/stored in a file.
 
 1. Copy the scratch.vim plugin to the $HOME/.vim/plugin directory. Refer to
    the following Vim help topics for more information about Vim plugins:
-
+>
       :help add-plugin
       :help add-global-plugin
       :help runtimepath
+<
+   If you are using Vundle then
+>
+       BundleInstall 'molok/vim-scratch'
+<
+   and place
+>
+       Bundle 'molok/vim-scratch'
+<
+   in your vimrc
+
+   If you're prefer using pathogen, place this directory inside ~/.vim/bundle/
 2. Restart Vim.
 
 ==============================================================================
@@ -100,6 +112,5 @@ You can set the height and the width for Sscratch/Vscratch with:
     let g:scratch_height = 20
     let g:scratch_width = 100
 <
-
 
 vim: ts=4 ft=help tw=78
