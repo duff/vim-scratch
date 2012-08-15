@@ -1,5 +1,5 @@
 " File: scratch.vim
-" Version: 1.9.1
+" Version: 1.9.2
 " Author: Yegappan Lakshmanan (yegappan AT yahoo DOT com)
 " Modified By: Duff OMelia
 " Modified By: Mark Bennett
@@ -227,3 +227,4 @@ command! -nargs=0 -bar VscratchToggle call s:ScratchBufferToggle(1)
 
 " Command to open the scratch buffer in a new tab
 command! -nargs=0 Tscratch call s:ScratchBufferOpen(2, 0)
+
